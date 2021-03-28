@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using System.Net;
 using System.Security.AccessControl;
 using System.Threading;
+using System.IO;
+using System.Diagnostics;
 
 namespace dope_magic
 {
@@ -148,7 +150,53 @@ namespace dope_magic
                         } break;
                     case '4':
                         {
+                            Console.WriteLine("работа с загрузками.\n");
 
+                            List<string> weight = new List<string>();
+                            foreach(downloadUnit unit in ts.units)
+                            {
+                                weight.Add($"{unit.savePath}\\{unit.fileName}");
+                            }
+
+                            int unl;
+                            do
+                            {
+                                unl = graphicMenu.VerticalMenu(weight.ToArray());
+                                Console.Clear();
+
+                                FileInfo vh = new FileInfo(weight[unl]);
+
+                                Console.WriteLine("1-> переместить\n2-> переименовать\n3-> удалить");
+                                char ch = Console.ReadKey().KeyChar;
+                                Console.Clear();
+                                switch(ch)
+                                {
+                                    case '1':
+                                        {
+                                            Console.WriteLine("новое место жительства:");
+                                            string path = Console.ReadLine();
+
+                                            File.Move(vh.FullName, path);
+                                            Console.WriteLine("дело сделано.");
+                                        }break;
+                                    case '2':
+                                        {
+                                            Console.WriteLine("новое имя:");
+                                            string newName = Console.ReadLine() + vh.Extension;
+
+                                            File.Move(vh.FullName, newName);
+                                            Console.WriteLine("дело сделано");
+                                        }break;
+                                    case '3':
+                                        {
+                                            File.Delete(vh.FullName);
+
+                                            Console.WriteLine("дело сделано.");
+                                        }break;
+                                }
+
+                                Console.Clear();
+                            } while (unl != -2);
                         }break;
                     default:
                         {
@@ -211,4 +259,74 @@ namespace dope_magic
             this.unl = unl;
         }
     }
+
+
+
+    #region gololobov
+    class graphicMenu
+    {
+        public static int VerticalMenu(string[] elements)
+        {
+            int maxLen = 0;
+            foreach (var item in elements)
+            {
+                if (item.Length > maxLen)
+                    maxLen = item.Length;
+            }
+            ConsoleColor bg = Console.BackgroundColor;
+            ConsoleColor fg = Console.ForegroundColor;
+            int x = Console.CursorLeft;
+            int y = Console.CursorTop;
+            Console.CursorVisible = false;
+            int pos = 0;
+            while (true)
+            {
+
+                for (int i = 0; i < elements.Length; i++)
+                {
+                    Console.SetCursorPosition(x, y + i);
+                    if (i == pos)
+                    {
+                        Console.BackgroundColor = fg;
+                        Console.ForegroundColor = bg;
+                    }
+                    else
+                    {
+                        Console.BackgroundColor = bg;
+                        Console.ForegroundColor = fg;
+                    }
+                    Console.Write(elements[i].PadRight(maxLen));
+                }
+
+                ConsoleKey consoleKey = Console.ReadKey().Key;
+                switch (consoleKey)
+                {
+
+                    case ConsoleKey.Enter:
+                        return pos;
+                        break;
+
+                    case ConsoleKey.Escape:
+                        return -2;
+                        break;
+
+                    case ConsoleKey.UpArrow:
+                        if (pos > 0)
+                            pos--;
+                        break;
+
+                    case ConsoleKey.DownArrow:
+                        if (pos < elements.Length - 1)
+                            pos++;
+                        break;
+
+
+                    default:
+                        break;
+                }
+
+            }
+        }
+    }
+    #endregion
 }
