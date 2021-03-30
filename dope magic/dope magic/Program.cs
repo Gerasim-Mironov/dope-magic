@@ -19,7 +19,9 @@ namespace dope_magic
 
             while (true)
             {
-                Console.WriteLine("1-> скачать файл.\n2-> журнал загрузок\n3-> журнал загрузок по меткам\n4-> ...");
+                Console.Clear();
+
+                Console.WriteLine("1-> скачать файл.\n2-> журнал загрузок\n3-> журнал загрузок по меткам\n4-> управление загруженными файлами.");
                 char mt = Console.ReadKey().KeyChar;
                 Console.Clear();
                 switch (mt)
@@ -113,6 +115,8 @@ namespace dope_magic
                                     Console.WriteLine($"{item.fileName} ({item.url}), {item.unl}");
                                 }
                             }
+
+                            Console.ReadKey();
                         } break;
                     case '3':
                         {
@@ -147,6 +151,8 @@ namespace dope_magic
                                     }
                                 }
                             }
+
+                            Console.ReadKey();
                         } break;
                     case '4':
                         {
@@ -158,10 +164,12 @@ namespace dope_magic
                                 weight.Add($"{unit.savePath}\\{unit.fileName}");
                             }
 
-                            int unl;
-                            do
+                            while (true)
                             {
-                                unl = graphicMenu.VerticalMenu(weight.ToArray());
+                                int unl = graphicMenu.VerticalMenu(weight.ToArray());
+                                if (unl == -2)
+                                    break;
+
                                 Console.Clear();
 
                                 FileInfo vh = new FileInfo(weight[unl]);
@@ -169,7 +177,7 @@ namespace dope_magic
                                 Console.WriteLine("1-> переместить\n2-> переименовать\n3-> удалить");
                                 char ch = Console.ReadKey().KeyChar;
                                 Console.Clear();
-                                switch(ch)
+                                switch (ch)
                                 {
                                     case '1':
                                         {
@@ -178,7 +186,8 @@ namespace dope_magic
 
                                             File.Move(vh.FullName, path);
                                             Console.WriteLine("дело сделано.");
-                                        }break;
+                                        }// в изменённый файл нужно вдохнуть жизнь.
+                                        break;
                                     case '2':
                                         {
                                             Console.WriteLine("новое имя:");
@@ -186,17 +195,19 @@ namespace dope_magic
 
                                             File.Move(vh.FullName, newName);
                                             Console.WriteLine("дело сделано");
-                                        }break;
+                                        }
+                                        break;
                                     case '3':
                                         {
                                             File.Delete(vh.FullName);
 
                                             Console.WriteLine("дело сделано.");
-                                        }break;
+                                        }
+                                        break;
                                 }
 
                                 Console.Clear();
-                            } while (unl != -2);
+                            }
                         }break;
                     default:
                         {
