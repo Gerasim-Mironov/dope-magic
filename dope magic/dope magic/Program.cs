@@ -39,16 +39,20 @@ namespace dope_magic
                             string data = Console.ReadLine();
                             string temple = string.Empty;
                             List<string> tags = new List<string>();
-                            foreach (char item in data)
+                            for (int i = 0; i < data.Length; i++)
                             {
-                                if (item == ',')
+                                if (data[i] == ',' || i == data.Length)
                                 {
                                     tags.Add(temple);
                                     temple = string.Empty;
                                 }
+                                else if(data[i] == ' ')
+                                {
+                                    ;
+                                }
                                 else
                                 {
-                                    temple += item;
+                                    temple += data[i];
                                 }
                             }
 
@@ -125,20 +129,24 @@ namespace dope_magic
                             List<string> vs = new List<string>();
 
                             string msg = string.Empty;
-                            foreach (char item in income)
+                            for (int i = 0; i < income.Length; i++)
                             {
-                                if (item == ',')
+                                if (income[i] == ',' || i == income.Length)
                                 {
                                     vs.Add(msg);
                                     msg = string.Empty;
                                 }
+                                else if(income[i] == ' ')
+                                {
+                                    ;
+                                }
                                 else
                                 {
-                                    msg += item;
+                                    msg += income[i];
                                 }
                             }
 
-                            foreach(string item in vs)
+                            foreach (string item in vs)
                             {
                                 foreach(downloadUnit obj in ts.units)
                                 {
@@ -170,6 +178,15 @@ namespace dope_magic
                                 if (unl == -2)
                                     break;
 
+                                #region newUnit
+                                string url = ts.units[unl].url;
+                                string savePath = ts.units[unl].savePath;
+                                string fileName = ts.units[unl].fileName;
+                                List<string> tags = ts.units[unl].tags;
+                                DateTime dv = ts.units[unl].unl;
+                                bool? success = ts.units[unl].success;
+                                #endregion
+
                                 Console.Clear();
 
                                 FileInfo vh = new FileInfo(weight[unl]);
@@ -184,22 +201,32 @@ namespace dope_magic
                                             Console.WriteLine("новое место жительства:");
                                             string path = Console.ReadLine();
 
-                                            File.Move(vh.FullName, path);
+                                            File.Move(vh.FullName, path + "\\" + vh.Name);
+
+                                            downloadUnit temp = new downloadUnit(url, path, fileName, tags, dv, success);
+                                            ts.units[unl] = temp;
+
                                             Console.WriteLine("дело сделано.");
-                                        }// в изменённый файл нужно вдохнуть жизнь.
+                                        }
                                         break;
                                     case '2':
                                         {
                                             Console.WriteLine("новое имя:");
-                                            string newName = Console.ReadLine() + vh.Extension;
+                                            string tempName = Console.ReadLine() + vh.Extension;
+                                            string newName = vh.DirectoryName + "\\" + tempName;
 
                                             File.Move(vh.FullName, newName);
+
+                                            downloadUnit temp = new downloadUnit(url, savePath, tempName, tags, dv, success);
+                                            ts.units[unl] = temp;
+
                                             Console.WriteLine("дело сделано");
                                         }
                                         break;
                                     case '3':
                                         {
                                             File.Delete(vh.FullName);
+                                            ts.units.RemoveAt(unl);
 
                                             Console.WriteLine("дело сделано.");
                                         }
@@ -211,10 +238,7 @@ namespace dope_magic
                         }break;
                     default:
                         {
-                            Console.WriteLine("это всё твоя вина.");
-                            Thread.Sleep(2200);
-
-                            Environment.FailFast("хахахах, лол.");
+                            Console.WriteLine("неправильно!");
                         }break;
                 }
             }
@@ -268,6 +292,15 @@ namespace dope_magic
             this.fileName = fileName;
             this.tags = tags;
             this.unl = unl;
+        }
+        public downloadUnit(string url, string savePath, string fileName, List<string> tags, DateTime unl, bool? success)
+        {
+            this.url = url;
+            this.savePath = savePath;
+            this.fileName = fileName;
+            this.tags = tags;
+            this.unl = unl;
+            this.success = success;
         }
     }
 
